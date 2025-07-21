@@ -1,12 +1,12 @@
-NAME	= philosophers
+NAME    = philosophers
 
-CC		= cc
-CFLAGS	= -Wall -Wextra -Werror -g
+CC      = cc
+CFLAGS  = -Wall -Wextra -Werror -pthread -g
 
-SRCS	= src/*.c
-OBJS	= $(SRCS:.c=.o)
+SRCS    = $(wildcard srcs/*.c)
+OBJS    = $(SRCS:.c=.o)
 
-INC		= -Iinclude
+INC     = -Iinclude
 
 all: $(NAME)
 
@@ -29,3 +29,4 @@ v: re
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --track-fds=yes ./$(NAME)
 
 .PHONY: all clean fclean re v
+
