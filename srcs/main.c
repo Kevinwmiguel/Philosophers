@@ -6,39 +6,11 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:52:33 by kwillian          #+#    #+#             */
-/*   Updated: 2025/07/21 23:28:39 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/07/28 00:13:30 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philosophers.h"
-
-long	get_time_ms(void)
-{
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000L) + (tv.tv_usec / 1000));
-}
-
-void	*routine(void *arg)
-{
-	t_philo	*philo;
-
-	philo = (t_philo *)arg;
-
-	pthread_mutex_lock(philo->left_fork);
-	pthread_mutex_lock(philo->right_fork);
-	pthread_mutex_lock(&philo->rules->print);
-	printf("%ld %d pegou os garfos e está comendo\n",
-		get_time_ms(), philo->id);
-	pthread_mutex_unlock(&philo->rules->print);
-	usleep(philo->rules->must_eat / 1000);
-
-	pthread_mutex_unlock(philo->right_fork);
-	pthread_mutex_unlock(philo->left_fork);
-
-	return (NULL);
-}
 
 void	start_threads(t_philo *philos, t_rules *rules)
 {
@@ -53,7 +25,7 @@ void	start_threads(t_philo *philos, t_rules *rules)
 	i = 0;
 	while (i < rules->number_of_philos)
 	{
-		pthread_join(philos[i].thread, NULL); // DEvo mudar aqui para ficar infinito
+		pthread_join(philos[i].thread, NULL);
 		i++;
 	}
 }
@@ -100,6 +72,7 @@ int	main(int argc, char **argv)
 	t_philo		*philos;
 	t_rules		*rules;
 	int			i;
+	pthread_t	table;
 
 	i = 0;
 	if (argc < 5 || argc > 6)
@@ -118,7 +91,11 @@ int	main(int argc, char **argv)
 	philos = create_philos(rules);
 	if (!philos)
 		return (1);
+	pthread_create(&table, NULL, live_checker, (void *)philos);
 	while (1)
+	{
 		start_threads(philos, rules);
+		pthread_join(table, NULL);
+	}
 	return (0);
 }

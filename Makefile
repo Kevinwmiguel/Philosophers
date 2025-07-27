@@ -28,5 +28,9 @@ v: re
 	clear
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --track-fds=yes ./$(NAME)
 
+rc: re
+	clear
+	valgrind --tool=helgrind -s ./$(NAME)
+
 .PHONY: all clean fclean re v
 

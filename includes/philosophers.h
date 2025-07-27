@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:46:54 by kwillian          #+#    #+#             */
-/*   Updated: 2025/07/20 21:57:37 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/07/28 00:18:17 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,12 @@ typedef struct s_rules
 	int				number_of_philos;
 	int				time_to_die;
 	int				time_to_eat;
+	int				time_to_think;
 	int				time_to_sleep;
 	int				must_eat;
 	int				someone_died;
 	long			start_time;
+	long			end_time;
 	pthread_mutex_t	print;
 	pthread_mutex_t	*forks;
 }	t_rules;
@@ -43,9 +45,19 @@ typedef struct s_philo
 	pthread_t		thread;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
+	pthread_mutex_t	*lock_meal;
 	t_rules			*rules;
 }	t_philo;
 
-int	ft_atoi(const char *str);
+//MAIN
+
+//AUX
+int		ft_atoi(const char *str);
+long	get_time_ms(void);
+void	print_status(t_philo *philo, char *msg, int i);
+void	*live_checker(void *arg);
+
+//ROUTINES
+void	*routine(void *arg);
 
 #endif
