@@ -27,6 +27,6 @@ The main goal of this project is to implement a solution that handles:
 
 🔧 **Work in progress** — Basic structure is implemented, logic and safety checks are being refined.
 
-## 🖼️ Illustration
+## Illustration
 
 <img width="225" height="225" alt="image" src="https://github.com/user-attachments/assets/80612021-6b7b-4fa3-b659-c2b51910897c" />
