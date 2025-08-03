@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:52:33 by kwillian          #+#    #+#             */
-/*   Updated: 2025/07/28 00:13:30 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/03 16:57:34 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ t_philo	*create_philos(t_rules	*rules)
 	{
 		philos[i].id = i + 1;
 		philos[i].meals_eaten = 0;
-		philos[i].last_meal = 0;
+		philos[i].last_meal = get_time_ms();
 		philos[i].rules = rules;
 		philos[i].left_fork = &rules->forks[i];
 		philos[i].right_fork = &rules->forks[(i + 1) % rules->number_of_philos];
@@ -91,11 +91,20 @@ int	main(int argc, char **argv)
 	philos = create_philos(rules);
 	if (!philos)
 		return (1);
-	pthread_create(&table, NULL, live_checker, (void *)philos);
+	i = 0;
+	while (i < rules->number_of_philos)
+	{
+		philos[i].lock_meal = malloc(sizeof(pthread_mutex_t));
+		pthread_mutex_init(philos[i].lock_meal, NULL);
+		i++;
+	}
+	
 	while (1)
 	{
 		start_threads(philos, rules);
-		pthread_join(table, NULL);
+		pthread_create(&table, NULL, live_checker, (void *)philos);
+		if (philos->rules->someone_died)
+			exit(1);
 	}
 	return (0);
 }

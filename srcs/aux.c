@@ -6,38 +6,42 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 22:01:49 by kwillian          #+#    #+#             */
-/*   Updated: 2025/07/28 00:20:13 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/03 23:13:29 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philosophers.h"
 
-void *live_checker(void *arg)
+void	*live_checker(void *arg)
 {
-	t_philo *philos = (t_philo *)arg;
-	int i;
-	long now;
+	t_philo	*philo;
+	int		i;
+	long	now;
 
-	while (1)
+	philo = (t_philo *)arg;
+	i = 0;
+	while (i < philo->rules->number_of_philos)
 	{
-		i = 0;
-		while (i < philos->rules->number_of_philos)
+
+		pthread_mutex_lock(philo[i].lock_meal);
+		now = get_time_ms() - philo->rules->start_time;
+		if ((now - philo[i].last_meal) > philo->rules->time_to_die)
 		{
-			pthread_mutex_lock(&philos[i].lock_meal);
-			now = get_time_ms();
-			if (now - &philos[i].last_meal > philos->rules->time_to_die)
-			{
-				pthread_mutex_lock(&rules->print);
-				printf("%ld %d died\n", now - rules->start_time, rules->philos[i].id);
-				pthread_mutex_unlock(&rules->print);
-				rules->someone_died = 1;
-				pthread_mutex_unlock(&rules->philos[i].lock_meal);
-				return (NULL);
-			}
-			pthread_mutex_unlock(&philos[i]->lock_meal);
-			i++;
+			printf("\nvalor da contagem %ld\n", (now - philo[i].last_meal));
+			printf("time to die %d\n", philo->rules->time_to_die);
+			pthread_mutex_lock(&philo->rules->print);
+			printf("tempos: now: %ld \n", now);
+			printf("start %ld\n", philo->rules->start_time);
+			printf("last_meal: %ld \n", philo->last_meal);
+			printf("%ld %d died\n", now, philo[i].id);
+			pthread_mutex_unlock(&philo->rules->print);
+			philo->rules->someone_died = 1;
+			exit(1);
+			pthread_mutex_unlock(philo[i].lock_meal);
+			return (NULL);
 		}
-		usleep(1000);
+		pthread_mutex_unlock(philo[i].lock_meal);
+		i++;
 	}
 	return (NULL);
 }

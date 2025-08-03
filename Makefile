@@ -12,6 +12,7 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(INC) -o $(NAME)
+	@bash ./loadbar.sh
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INC) -c $< -o $@
@@ -23,6 +24,8 @@ fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
+	@bash ./loadbar.sh
+	clear
 
 v: re
 	clear
