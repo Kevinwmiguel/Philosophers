@@ -6,42 +6,44 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 22:01:49 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/03 23:13:29 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/12 21:42:15 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philosophers.h"
 
-void	*live_checker(void *arg)
+void	debuger(long now, t_philo *philo, int i)
 {
-	t_philo	*philo;
+	printf("\nvalor da contagem %ld\n\n", (philo[i].last_meal));
+	printf("time to die %d\n\n", philo->rules->time_to_die);
+	printf("tempos: now: %ld \n\n", now);
+	printf("start %ld\n\n", philo->rules->start_time);
+	printf("last_meal: %ld \n\n", philo->last_meal);
+	printf("%ld %d died\n\n", now, philo[i].id);
+	philo->rules->someone_died = 1;
+	exit(1);
+}
+
+void	*live_checker(t_philo *philo)
+{
 	int		i;
 	long	now;
 
-	philo = (t_philo *)arg;
 	i = 0;
-	while (i < philo->rules->number_of_philos)
+	while (1)
 	{
-
-		pthread_mutex_lock(philo[i].lock_meal);
+		pthread_mutex_lock(philo->lock_meal);
 		now = get_time_ms() - philo->rules->start_time;
-		if ((now - philo[i].last_meal) > philo->rules->time_to_die)
+		if (now - philo->last_meal > philo->rules->time_to_die)
 		{
-			printf("\nvalor da contagem %ld\n", (now - philo[i].last_meal));
-			printf("time to die %d\n", philo->rules->time_to_die);
 			pthread_mutex_lock(&philo->rules->print);
-			printf("tempos: now: %ld \n", now);
-			printf("start %ld\n", philo->rules->start_time);
-			printf("last_meal: %ld \n", philo->last_meal);
-			printf("%ld %d died\n", now, philo[i].id);
+			debuger(now, philo, i);
 			pthread_mutex_unlock(&philo->rules->print);
 			philo->rules->someone_died = 1;
-			exit(1);
-			pthread_mutex_unlock(philo[i].lock_meal);
+			pthread_mutex_unlock(philo->lock_meal);
 			return (NULL);
 		}
-		pthread_mutex_unlock(philo[i].lock_meal);
-		i++;
+		pthread_mutex_unlock(philo->lock_meal);
 	}
 	return (NULL);
 }
@@ -54,6 +56,7 @@ void	print_status(t_philo *philo, char *msg, int i)
 	pthread_mutex_lock(&philo->rules->print);
 	if (i == 1)
 		philo->last_meal = timestamp;
+	printf("%ld %d has taken a fork\n", timestamp, philo->id);
 	printf("%ld %d %s\n", timestamp, philo->id, msg);
 	pthread_mutex_unlock(&philo->rules->print);
 }

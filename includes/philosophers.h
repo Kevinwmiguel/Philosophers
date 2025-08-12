@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:46:54 by kwillian          #+#    #+#             */
-/*   Updated: 2025/07/28 00:18:17 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/12 21:41:43 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 # include <string.h>
 # include <stdio.h>
 # include <pthread.h>
-#include <sys/time.h>
+# include <sys/time.h>
 
 // pthread_mutex_t	g_mutex;
 
@@ -55,7 +55,7 @@ typedef struct s_philo
 int		ft_atoi(const char *str);
 long	get_time_ms(void);
 void	print_status(t_philo *philo, char *msg, int i);
-void	*live_checker(void *arg);
+void	*live_checker(t_philo *arg);
 
 //ROUTINES
 void	*routine(void *arg);
