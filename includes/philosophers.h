@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:46:54 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/12 21:41:43 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/15 16:54:23 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ int		ft_atoi(const char *str);
 long	get_time_ms(void);
 void	print_status(t_philo *philo, char *msg, int i);
 void	*live_checker(t_philo *arg);
+void	freedom(t_philo	*philos, t_rules *rules);
+void stop_threads(t_philo *philos, t_rules *rules);
 
 //ROUTINES
 void	*routine(void *arg);

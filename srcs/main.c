@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:52:33 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/12 21:41:51 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/15 16:56:24 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,16 @@ void	start_threads(t_philo *philos, t_rules *rules)
 	}
 	i = 0;
 	pthread_create(&table, NULL, (void *) live_checker, (void *)philos);
+	pthread_join(table, NULL);
 	while (i < rules->number_of_philos)
 	{
+		pthread_cancel(philos[i].thread);
 		pthread_join(philos[i].thread, NULL);
-		pthread_join(table, NULL);
+		if (philos->rules->someone_died == 1)
+		{
+			freedom(philos, rules);
+			exit(1);
+		}
 		i++;
 	}
 	exit(1);
