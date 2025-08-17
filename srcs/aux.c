@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 22:01:49 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/17 20:17:46 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/17 21:27:52 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,45 +18,51 @@ void	debuger(long now, t_philo *philo, int i)
 	philo->rules->someone_died = 1;
 }
 
-void	*live_checker(t_philo *philo)
+void *live_checker(void *arg)
 {
-	int		i;
-	long	now;
+    t_philo *ph = (t_philo *)arg;
+    t_rules *r = ph[0].rules;
+    int i;
+    long now;
 
-	i = 0;
-	while (philo->rules->someone_died != 1)
-	{
-		pthread_mutex_lock(philo->lock_meal);
-		now = get_time_ms() - philo->rules->start_time;
-		if (now - philo->last_meal > philo->rules->time_to_die)
-		{
-			pthread_mutex_lock(&philo->rules->print);
-			debuger(now, philo, i);
-			pthread_mutex_unlock(&philo->rules->print);
-			pthread_mutex_unlock(philo->lock_meal);
-			return (NULL);
-		}
-		pthread_mutex_unlock(philo->lock_meal);
-	}
-	return (NULL);
+    while (!r->someone_died)
+    {
+        i = 0;
+        while (i < r->number_of_philos && !r->someone_died)
+        {
+            pthread_mutex_lock(ph[i].lock_meal);
+            now = get_time_ms();
+            if (now - ph[i].last_meal > r->time_to_die)
+            {
+                pthread_mutex_lock(&r->print);
+                if (!r->someone_died)
+                {
+                    r->someone_died = 1;
+                    printf("%ld %d died\n", now - r->start_time, ph[i].id);
+                }
+                pthread_mutex_unlock(&r->print);
+                pthread_mutex_unlock(ph[i].lock_meal);
+                return NULL;
+            }
+            pthread_mutex_unlock(ph[i].lock_meal);
+            i++;
+        }
+        usleep(1000);s
+    }
+    return NULL;
 }
 
-void	print_status(t_philo *philo, char *msg, int i)
+void print_status(t_philo *philo, const char *msg)
 {
-	long	timestamp;
+    long timestamp;
 
-	timestamp = get_time_ms() - philo->rules->start_time;
-	pthread_mutex_lock(&philo->rules->print);
-	if (i == 1)
-	{
-		pthread_mutex_lock(philo->lock_meal);
-		philo->last_meal = timestamp;
-		philo->meals_eaten++;
-		pthread_mutex_unlock(philo->lock_meal);
-	}
-	printf("%ld %d has taken a fork\n", timestamp, philo->id);
-	printf("%ld %d %s\n", timestamp, philo->id, msg);
-	pthread_mutex_unlock(&philo->rules->print);
+    pthread_mutex_lock(&philo->rules->print);
+    if (!philo->rules->someone_died)
+    {
+        timestamp = get_time_ms() - philo->rules->start_time;
+        printf("%ld %d %s\n", timestamp, philo->id, msg);
+    }
+    pthread_mutex_unlock(&philo->rules->print);
 }
 
 int	ft_atoi(const char *str)
