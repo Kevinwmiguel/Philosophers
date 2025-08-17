@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 22:01:49 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/15 16:40:13 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/17 20:17:46 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,6 @@
 
 void	debuger(long now, t_philo *philo, int i)
 {
-	// printf("\nvalor da contagem %ld\n\n", (philo[i].last_meal));
-	// printf("time to die %d\n\n", philo->rules->time_to_die);
-	// printf("tempos: now: %ld \n\n", now);
-	// printf("start %ld\n\n", philo->rules->start_time);
-	// printf("last_meal: %ld \n\n", philo->last_meal);
 	printf("%ld %d died\n\n", now, philo[i].id);
 	philo->rules->someone_died = 1;
 }
@@ -38,7 +33,6 @@ void	*live_checker(t_philo *philo)
 			pthread_mutex_lock(&philo->rules->print);
 			debuger(now, philo, i);
 			pthread_mutex_unlock(&philo->rules->print);
-			philo->rules->someone_died = 1;
 			pthread_mutex_unlock(philo->lock_meal);
 			return (NULL);
 		}
@@ -54,7 +48,12 @@ void	print_status(t_philo *philo, char *msg, int i)
 	timestamp = get_time_ms() - philo->rules->start_time;
 	pthread_mutex_lock(&philo->rules->print);
 	if (i == 1)
+	{
+		pthread_mutex_lock(philo->lock_meal);
 		philo->last_meal = timestamp;
+		philo->meals_eaten++;
+		pthread_mutex_unlock(philo->lock_meal);
+	}
 	printf("%ld %d has taken a fork\n", timestamp, philo->id);
 	printf("%ld %d %s\n", timestamp, philo->id, msg);
 	pthread_mutex_unlock(&philo->rules->print);

@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 22:58:59 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/15 16:47:24 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/17 20:19:55 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ void	freedom(t_philo *philos, t_rules *rules)
 		if (philos[i].lock_meal)
 		{
 			pthread_mutex_destroy(philos[i].lock_meal);
+			pthread_mutex_destroy(philos[i].right_fork);
+			pthread_mutex_destroy(philos[i].left_fork);
 			free(philos[i].lock_meal);
 		}
 		i++;
@@ -35,6 +37,7 @@ void	freedom(t_philo *philos, t_rules *rules)
 	pthread_mutex_destroy(&rules->print);
 	free(rules->forks);
 	free(philos);
+	exit(1);
 }
 
 void	*routine(void *arg)
@@ -44,6 +47,11 @@ void	*routine(void *arg)
 	philo = (t_philo *)arg;
 	while (philo->rules->someone_died != 1)
 	{
+		if (philo->meals_eaten == philo->rules->must_eat)
+		{
+			freedom(philo, philo->rules);
+			exit(1);
+		}
 		pthread_mutex_lock(philo->left_fork);
 		pthread_mutex_lock(philo->right_fork);
 		print_status(philo, "is eating", 1);

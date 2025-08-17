@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:52:33 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/15 16:56:24 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/17 20:02:00 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,23 +24,23 @@ void	start_threads(t_philo *philos, t_rules *rules)
 		i++;
 	}
 	i = 0;
-	pthread_create(&table, NULL, (void *) live_checker, (void *)philos);
+	pthread_create(&table, NULL, (void *)live_checker, (void *)philos);
 	pthread_join(table, NULL);
 	while (i < rules->number_of_philos)
 	{
-		pthread_cancel(philos[i].thread);
-		pthread_join(philos[i].thread, NULL);
 		if (philos->rules->someone_died == 1)
 		{
+			pthread_cancel(philos[i].thread);
+			// pthread_mutex_destroy(table);
 			freedom(philos, rules);
 			exit(1);
 		}
+		pthread_join(philos[i].thread, NULL);
 		i++;
 	}
-	exit(1);
 }
 
-t_philo	*create_philos(t_rules	*rules)
+t_philo	*create_philos(t_rules *rules)
 {
 	t_philo	*philos;
 	int		i;
@@ -86,16 +86,16 @@ void	verify(int argc)
 {
 	if (argc < 5 || argc > 6)
 	{
-		printf("Just 5 or 6 arguments\n");
+		printf("Please use: <number_of_philosophers> <time_to_die> <time_to_eat> <time_to_sleep> [number_of_times_each_philosopher_must_eat]\n");
 		exit(1);
 	}
 }
 
 int	main(int argc, char **argv)
 {
-	t_philo				*philos;
-	static t_rules		rules;
-	int					i;
+	t_philo			*philos;
+	static t_rules	rules;
+	int				i;
 
 	i = 0;
 	verify(argc);
