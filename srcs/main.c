@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:52:33 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/17 21:26:23 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/20 22:10:56 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,7 @@ void start_threads(t_philo *philos, t_rules *rules)
         pthread_create(&philos[i].thread, NULL, routine, &philos[i]);
         i++;
     }
-	if (philos->rules->full == 1)
-	{
-		i = 0;
-		while (i < philos->rules->number_of_philos)
-		{
-			pthread_cancel(philos[i].thread);
-			i++;
-		}
-		freedom(philos, rules);
-		exit(1);
-	}
+	
     pthread_create(&monitor, NULL, live_checker, (void *)philos);
     pthread_join(monitor, NULL);
     i = 0;
@@ -42,6 +32,17 @@ void start_threads(t_philo *philos, t_rules *rules)
         pthread_join(philos[i].thread, NULL);
         i++;
     }
+	if (philos->rules->full == 1)
+	{
+		i = 0;
+		// while (i < philos->rules->number_of_philos)
+		// {
+		// 	pthread_cancel(philos[i].thread);
+		// 	i++;
+		// }
+		freedom(philos, rules);
+		exit(1);
+	}
     freedom(philos, rules);
 }
 

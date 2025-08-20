@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 22:01:49 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/17 21:27:52 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/20 22:18:00 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ void *live_checker(void *arg)
                 if (!r->someone_died)
                 {
                     r->someone_died = 1;
-                    printf("%ld %d died\n", now - r->start_time, ph[i].id);
+                    if (r->must_eat != ph->meals_eaten)
+                        printf("%ld %d died\n", now - r->start_time, ph[i].id);
                 }
                 pthread_mutex_unlock(&r->print);
                 pthread_mutex_unlock(ph[i].lock_meal);
@@ -47,7 +48,7 @@ void *live_checker(void *arg)
             pthread_mutex_unlock(ph[i].lock_meal);
             i++;
         }
-        usleep(1000);s
+        usleep(1000);
     }
     return NULL;
 }

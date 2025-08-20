@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 22:58:59 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/17 21:27:19 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/20 21:47:39 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void *routine(void *arg)
 		if (p->meals_eaten == p->rules->must_eat)
 		{
 			p->rules->full = 1;
-			break;
+			return (NULL);
 		}
         if (p->rules->someone_died)
             break;
