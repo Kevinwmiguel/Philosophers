@@ -4,7 +4,8 @@ CC      = cc
 CFLAGS  = -Wall -Wextra -Werror -pthread -g
 
 SRCS    = $(wildcard srcs/*.c)
-OBJS    = $(SRCS:.c=.o)
+OBJDIR  = output
+OBJS    = $(patsubst srcs/%.c,$(OBJDIR)/%.o,$(SRCS))
 
 INC     = -Iinclude
 
@@ -14,11 +15,13 @@ $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(INC) -o $(NAME)
 	@bash ./loadbar.sh
 
-%.o: %.c
+# regra para compilar .o dentro da pasta output/
+$(OBJDIR)/%.o: srcs/%.c
+	@mkdir -p $(OBJDIR)
 	$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 clean:
-	rm -f $(OBJS)
+	rm -rf $(OBJDIR)
 
 fclean: clean
 	rm -f $(NAME)
@@ -36,4 +39,3 @@ r: re
 	valgrind --tool=helgrind -s ./$(NAME)
 
 .PHONY: all clean fclean re v
-

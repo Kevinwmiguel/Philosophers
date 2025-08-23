@@ -6,63 +6,74 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 22:01:49 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/17 21:27:52 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/23 13:38:44 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philosophers.h"
 
-void	debuger(long now, t_philo *philo, int i)
+int	blines(long now, long last, t_rules *r, t_philo *ph)
 {
-	printf("%ld %d died\n\n", now, philo[i].id);
-	philo->rules->someone_died = 1;
+	int	i;
+
+	i = r->count;
+	if (now - last > r->time_to_die)
+	{
+		if (!r->someone_died)
+		{
+			pthread_mutex_lock(&r->print);
+			r->someone_died = 1;
+			pthread_mutex_lock(ph[i].lock_meal);
+			if (r->must_eat != ph[i].meals_eaten)
+				printf("%ld %d died\n", now - r->start_time, ph[i].id);
+			pthread_mutex_unlock(&r->print);
+			pthread_mutex_unlock(ph[i].lock_meal);
+		}
+		return (1);
+	}
+	return (0);
 }
 
-void *live_checker(void *arg)
+void	*live_checker(void *arg)
 {
-    t_philo *ph = (t_philo *)arg;
-    t_rules *r = ph[0].rules;
-    int i;
-    long now;
+	t_philo	*ph;
+	t_rules	*r;
+	int		i;
+	long	now;
+	long	last;
 
-    while (!r->someone_died)
-    {
-        i = 0;
-        while (i < r->number_of_philos && !r->someone_died)
-        {
-            pthread_mutex_lock(ph[i].lock_meal);
-            now = get_time_ms();
-            if (now - ph[i].last_meal > r->time_to_die)
-            {
-                pthread_mutex_lock(&r->print);
-                if (!r->someone_died)
-                {
-                    r->someone_died = 1;
-                    printf("%ld %d died\n", now - r->start_time, ph[i].id);
-                }
-                pthread_mutex_unlock(&r->print);
-                pthread_mutex_unlock(ph[i].lock_meal);
-                return NULL;
-            }
-            pthread_mutex_unlock(ph[i].lock_meal);
-            i++;
-        }
-        usleep(1000);s
-    }
-    return NULL;
+	ph = (t_philo *)arg;
+	r = ph[0].rules;
+	while (!r->someone_died)
+	{
+		i = 0;
+		while (i < r->number_of_philos && !r->someone_died)
+		{
+			now = get_time_ms();
+			pthread_mutex_lock(ph[i].lock_meal);
+			last = ph[i].last_meal;
+			pthread_mutex_unlock(ph[i].lock_meal);
+			r->count = i;
+			if (blines(now, last, r, ph) == 1)
+				return (NULL);
+			i++;
+		}
+		usleep(1000);
+	}
+	return (NULL);
 }
 
-void print_status(t_philo *philo, const char *msg)
+void	print_status(t_philo *philo, const char *msg)
 {
-    long timestamp;
+	long	timestamp;
 
-    pthread_mutex_lock(&philo->rules->print);
-    if (!philo->rules->someone_died)
-    {
-        timestamp = get_time_ms() - philo->rules->start_time;
-        printf("%ld %d %s\n", timestamp, philo->id, msg);
-    }
-    pthread_mutex_unlock(&philo->rules->print);
+	pthread_mutex_lock(&philo->rules->print);
+	if (!philo->rules->someone_died)
+	{
+		timestamp = get_time_ms() - philo->rules->start_time;
+		printf("%ld %d %s\n", timestamp, philo->id, msg);
+	}
+	pthread_mutex_unlock(&philo->rules->print);
 }
 
 int	ft_atoi(const char *str)
