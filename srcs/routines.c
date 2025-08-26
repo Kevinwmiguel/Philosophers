@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 22:58:59 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/23 13:48:23 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/26 01:10:07 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,51 +14,67 @@
 
 void	debuger(long now, t_philo *philo, int i)
 {
-	printf("%ld %d died\n\n", now, philo[i].id);
+	printf("%ld %d died\n", now, philo[i].id);
 	philo->rules->someone_died = 1;
 }
 
-void	freedom(t_philo *philos, t_rules *rules)
+int	forkado(t_philo *p)
 {
-	int	i;
-
-	i = 0;
-	while (i < rules->number_of_philos)
+	if (p->rules->number_of_philos == 1)
 	{
-		if (philos[i].lock_meal)
-		{
-			pthread_mutex_destroy(philos[i].lock_meal);
-			free(philos[i].lock_meal);
-		}
-		i++;
+		print_status(p, "has taken a fork");
+		usleep(p->rules->time_to_die * 1000);
+		pthread_mutex_lock(&p->rules->print);
+		printf("%ld %d died\n", (get_time_ms() - p->rules->start_time), p->id);
+		p->rules->someone_died = 1;
+		pthread_mutex_unlock(&p->rules->print);
+		return (0);
 	}
-	i = 0;
-	while (i < rules->number_of_philos)
+	else if (p->id % 2 == 0)
 	{
-		pthread_mutex_destroy(&rules->forks[i]);
-		i++;
+		pthread_mutex_lock(p->right_fork);
+		pthread_mutex_lock(p->left_fork);
+		print_status(p, "has taken a fork");
+		print_status(p, "has taken a fork");
 	}
-	pthread_mutex_destroy(&rules->print);
-	free(rules->forks);
-	free(philos);
+	else if (p->id % 2 != 0)
+	{
+		pthread_mutex_lock(p->left_fork);
+		pthread_mutex_lock(p->right_fork);
+		print_status(p, "has taken a fork");
+		print_status(p, "has taken a fork");
+	}
+	return (1);
 }
 
-void	forkado(t_philo *p)
+static void	smart_usleep(long ms, t_rules *r)
 {
-	if (p->id % 2)
+	long	start;
+
+	start = get_time_ms();
+	while (get_time_ms() - start < ms)
 	{
-		pthread_mutex_lock(p->right_fork);
-		print_status(p, "has taken a fork");
-		pthread_mutex_lock(p->left_fork);
-		print_status(p, "has taken a fork");
+		pthread_mutex_lock(&r->print);
+		if (r->someone_died)
+		{
+			pthread_mutex_unlock(&r->print);
+			break ;
+		}
+		pthread_mutex_unlock(&r->print);
+		usleep(200);
 	}
-	else
-	{
-		pthread_mutex_lock(p->left_fork);
-		print_status(p, "has taken a fork");
-		pthread_mutex_lock(p->right_fork);
-		print_status(p, "has taken a fork");
-	}
+}
+
+void	meal_race(t_philo *p)
+{
+	pthread_mutex_lock(p->lock_meal);
+	p->last_meal = get_time_ms();
+	p->meals_eaten++;
+	pthread_mutex_unlock(p->lock_meal);
+	print_status(p, "is eating");
+	smart_usleep(p->rules->time_to_eat, p->rules);
+	pthread_mutex_unlock(p->right_fork);
+	pthread_mutex_unlock(p->left_fork);
 }
 
 void	*routine(void *arg)
@@ -67,19 +83,22 @@ void	*routine(void *arg)
 
 	p = (t_philo *)arg;
 	if (p->id % 2 == 0)
-		usleep(1000);
+		smart_usleep(p->rules->time_to_eat / 2, p->rules);
 	while (1)
 	{
 		if (check_full(p))
 			return (NULL);
-		forkado(p);
-		eat_sleep(p);
+		if (!forkado(p))
+			break ;
+		meal_race(p);
 		if (check_death(p))
 			break ;
 		print_status(p, "is sleeping");
-		usleep(p->rules->time_to_sleep * 1000);
+		smart_usleep(p->rules->time_to_sleep, p->rules);
 		if (check_death(p))
 			break ;
+		if (p->rules->number_of_philos % 2 == 1)
+			smart_usleep(p->rules->time_to_eat / 2, p->rules);
 		print_status(p, "is thinking");
 	}
 	return (NULL);

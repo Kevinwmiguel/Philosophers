@@ -13,7 +13,6 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(INC) -o $(NAME)
-	@bash ./loadbar.sh
 
 # regra para compilar .o dentro da pasta output/
 $(OBJDIR)/%.o: srcs/%.c
@@ -27,7 +26,6 @@ fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
-	@bash ./loadbar.sh
 	clear
 
 v: re

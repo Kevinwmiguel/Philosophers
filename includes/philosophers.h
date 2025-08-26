@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:46:54 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/23 13:53:49 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/25 21:19:49 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,9 @@ typedef struct s_philo
 	t_rules			*rules;
 }	t_philo;
 
+//VERIFY
+int		is_digit(char *str);
+
 //AUX
 int		ft_atoi(const char *str);
 long	get_time_ms(void);
@@ -62,6 +65,7 @@ void	freedom(t_philo	*philos, t_rules *rules);
 int		check_full(t_philo *p);
 int		check_death(t_philo *p);
 void	eat_sleep(t_philo *p);
+void	freedom(t_philo *philos, t_rules *rules);
 
 //ROUTINES
 void	*routine(void *arg);

@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:52:33 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/23 13:13:24 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/25 21:20:57 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,15 +64,9 @@ t_philo	*create_philos(t_rules *rules)
 
 void	init_rules(t_rules *rules, char **argv, int argc)
 {
-	long	now;
-
-	now = get_time_ms();
 	rules->number_of_philos = atoi(argv[1]);
-	if (rules->number_of_philos == 1)
-	{
-		printf("%ld %d died\n", (get_time_ms() - now), rules->number_of_philos);
+	if (rules->number_of_philos == 0)
 		exit(1);
-	}
 	rules->time_to_die = ft_atoi(argv[2]);
 	rules->time_to_eat = ft_atoi(argv[3]);
 	rules->time_to_sleep = ft_atoi(argv[4]);
@@ -87,8 +81,20 @@ void	init_rules(t_rules *rules, char **argv, int argc)
 		exit(1);
 }
 
-void	verify(int argc)
+void	validator(int argc, char **argv)
 {
+	int	i;
+
+	i = 1;
+	while (i < argc)
+	{
+		if (!is_digit(argv[i]))
+		{
+			printf("please just numbers\n");
+			exit(1);
+		}
+		i++;
+	}
 	if (argc < 5 || argc > 6)
 	{
 		printf("Please use: <number_of_philosophers> <time_to_die> \
@@ -105,7 +111,7 @@ int	main(int argc, char **argv)
 	int				i;
 
 	i = 0;
-	verify(argc);
+	validator(argc, argv);
 	init_rules(&rules, argv, argc);
 	while (i < rules.number_of_philos)
 	{

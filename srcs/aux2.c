@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 13:47:32 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/23 13:48:28 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/25 20:52:56 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,4 +52,29 @@ void	eat_sleep(t_philo *p)
 	usleep(p->rules->time_to_eat * 1000);
 	pthread_mutex_unlock(p->right_fork);
 	pthread_mutex_unlock(p->left_fork);
+}
+
+void	freedom(t_philo *philos, t_rules *rules)
+{
+	int	i;
+
+	i = 0;
+	while (i < rules->number_of_philos)
+	{
+		if (philos[i].lock_meal)
+		{
+			pthread_mutex_destroy(philos[i].lock_meal);
+			free(philos[i].lock_meal);
+		}
+		i++;
+	}
+	i = 0;
+	while (i < rules->number_of_philos)
+	{
+		pthread_mutex_destroy(&rules->forks[i]);
+		i++;
+	}
+	pthread_mutex_destroy(&rules->print);
+	free(rules->forks);
+	free(philos);
 }

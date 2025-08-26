@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 22:01:49 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/23 13:38:44 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/26 01:11:00 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,10 @@ int	blines(long now, long last, t_rules *r, t_philo *ph)
 			r->someone_died = 1;
 			pthread_mutex_lock(ph[i].lock_meal);
 			if (r->must_eat != ph[i].meals_eaten)
-				printf("%ld %d died\n", now - r->start_time, ph[i].id);
+			{
+				if (ph->rules->number_of_philos > 1)
+					printf("%ld %d died\n", now - r->start_time, ph[i].id);
+			}
 			pthread_mutex_unlock(&r->print);
 			pthread_mutex_unlock(ph[i].lock_meal);
 		}
