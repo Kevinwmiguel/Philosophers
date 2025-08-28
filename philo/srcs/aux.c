@@ -6,16 +6,35 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 22:01:49 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/23 12:58:39 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/26 01:11:00 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philosophers.h"
 
-void	debuger(long now, t_philo *philo, int i)
+int	blines(long now, long last, t_rules *r, t_philo *ph)
 {
-	printf("%ld %d died\n\n", now, philo[i].id);
-	philo->rules->someone_died = 1;
+	int	i;
+
+	i = r->count;
+	if (now - last > r->time_to_die)
+	{
+		if (!r->someone_died)
+		{
+			pthread_mutex_lock(&r->print);
+			r->someone_died = 1;
+			pthread_mutex_lock(ph[i].lock_meal);
+			if (r->must_eat != ph[i].meals_eaten)
+			{
+				if (ph->rules->number_of_philos > 1)
+					printf("%ld %d died\n", now - r->start_time, ph[i].id);
+			}
+			pthread_mutex_unlock(&r->print);
+			pthread_mutex_unlock(ph[i].lock_meal);
+		}
+		return (1);
+	}
+	return (0);
 }
 
 void	*live_checker(void *arg)
@@ -37,20 +56,9 @@ void	*live_checker(void *arg)
 			pthread_mutex_lock(ph[i].lock_meal);
 			last = ph[i].last_meal;
 			pthread_mutex_unlock(ph[i].lock_meal);
-			if (now - last > r->time_to_die)
-			{
-				if (!r->someone_died)
-				{
-					pthread_mutex_lock(&r->print);
-					r->someone_died = 1;
-					pthread_mutex_lock(ph[i].lock_meal);
-					if (r->must_eat != ph[i].meals_eaten)
-						printf("%ld %d died\n", now - r->start_time, ph[i].id);
-					pthread_mutex_unlock(&r->print);
-					pthread_mutex_unlock(ph[i].lock_meal);
-				}
+			r->count = i;
+			if (blines(now, last, r, ph) == 1)
 				return (NULL);
-			}
 			i++;
 		}
 		usleep(1000);
@@ -86,8 +94,8 @@ int	ft_atoi(const char *str)
 	{
 		if (str[i] == 45)
 			s = s * (-1);
-		if ((str[i] == 45 || str[i] == 43) && (str[i + 1] == 45 || str[i
-				+ 1] == 43))
+		if ((str[i] == 45 || str[i] == 43) && (str[i + 1] == 45
+				|| str[i + 1] == 43))
 			return (0);
 		i++;
 	}

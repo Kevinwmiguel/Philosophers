@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:46:54 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/17 21:18:28 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/29 00:17:10 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,23 +19,25 @@
 # include <stdio.h>
 # include <pthread.h>
 # include <sys/time.h>
+# include <limits.h>
 
 // pthread_mutex_t	g_mutex;
 
 typedef struct s_rules
 {
 	int				number_of_philos;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_think;
-	int				time_to_sleep;
+	long			time_to_die;
+	long			time_to_eat;
+	long			time_to_sleep;
 	int				must_eat;
 	int				someone_died;
 	long			start_time;
 	long			end_time;
 	int				full;
+	int				count;
 	pthread_mutex_t	print;
 	pthread_mutex_t	*forks;
+	int				erro;
 }	t_rules;
 
 typedef struct s_philo
@@ -50,17 +52,33 @@ typedef struct s_philo
 	t_rules			*rules;
 }	t_philo;
 
-//MAIN
+//INITERS
+t_philo	*create_philos(t_rules *rules);
+int		start_threads(t_philo *philos, t_rules *rules);
+int		init_rules(t_rules *rules, char **argv, int argc);
+int		init_mutex(t_rules *rules);
 
+//VERIFY
+int		is_digit(char *str);
+int		ft_ispace(char c);
+void	int_max_verify(t_rules *rules);
+int		validator(int argc, char **argv);
 //AUX
 int		ft_atoi(const char *str);
+long	ft_atoi2(const char *str);
 long	get_time_ms(void);
-void    print_status(t_philo *philo, const char *msg);
-void    *live_checker(void *arg);
+void	print_status(t_philo *philo, const char *msg);
+void	*live_checker(void *arg);
 void	freedom(t_philo	*philos, t_rules *rules);
-void	stop_threads(t_philo *philos, t_rules *rules);
+
+//AUX2
+int		check_full(t_philo *p);
+int		check_death(t_philo *p);
+void	eat_sleep(t_philo *p);
+void	freedom(t_philo *philos, t_rules *rules);
 
 //ROUTINES
 void	*routine(void *arg);
+void	debuger(long now, t_philo *philo, int i);
 
 #endif
