@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 21:17:04 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/29 00:11:49 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/30 17:06:45 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int	validator(int argc, char **argv)
 	i = 1;
 	if (atoi(argv[1]) == 0)
 	{
-		printf("n vale");
+		printf("Please at least 1+ Philosophers\n");
 		return (1);
 	}
 	while (i < argc)
