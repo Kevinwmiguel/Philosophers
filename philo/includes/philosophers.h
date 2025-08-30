@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:46:54 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/29 00:17:10 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/30 17:13:18 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ int		init_mutex(t_rules *rules);
 //VERIFY
 int		is_digit(char *str);
 int		ft_ispace(char c);
-void	int_max_verify(t_rules *rules);
+int		int_max_verify(t_rules *rules);
 int		validator(int argc, char **argv);
 //AUX
 int		ft_atoi(const char *str);

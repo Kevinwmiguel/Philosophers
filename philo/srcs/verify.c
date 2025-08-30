@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 21:17:04 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/30 17:06:45 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/30 17:24:10 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,18 +32,26 @@ int	ft_ispace(char c)
 		|| c == '\t' || c == '\v' || c == '\n');
 }
 
-void	int_max_verify(t_rules *rules)
+int	int_max_verify(t_rules *rules)
 {
+	if (rules->must_eat > INT_MAX)
+	{
+		printf("invalid must eat, integer!");
+		return (1);
+	}
 	if (rules->time_to_eat > INT_MAX || rules->time_to_sleep > INT_MAX)
 	{
 		printf("invalid time to eat or sleep\n");
 		rules->erro = 1;
+		return (1);
 	}
 	if (rules->time_to_die > 2147483647 || rules->time_to_die <= 0)
 	{
 		printf("invalid time to die time\n");
 		rules->erro = 1;
+		return (1);
 	}
+	return (0);
 }
 
 int	validator(int argc, char **argv)

@@ -6,7 +6,7 @@
 /*   By: kwillian <kwillian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 00:10:29 by kwillian          #+#    #+#             */
-/*   Updated: 2025/08/29 00:12:26 by kwillian         ###   ########.fr       */
+/*   Updated: 2025/08/30 17:17:37 by kwillian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ int	init_rules(t_rules *rules, char **argv, int argc)
 		rules->must_eat = ft_atoi(argv[5]);
 	else
 		rules->must_eat = -1;
-	int_max_verify(rules);
+	if (int_max_verify(rules))
+		return (1);
 	if (rules->erro == 0)
 	{
 		rules->someone_died = 0;
