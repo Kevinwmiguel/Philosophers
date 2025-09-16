@@ -25,7 +25,7 @@ The main goal of this project is to implement a solution that handles:
 
 ## 🚧 Status
 
-🔧 **Work in progress** — Basic structure is implemented, logic and safety checks are being refined.
+🔧 **DONE** — Evaluated with grade 100%
 
 ## Illustration
 
